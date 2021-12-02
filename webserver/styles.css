@@ -1,0 +1,9 @@
+#main-hud {
+    display: flex;
+    justify-content: space-between;
+}
+#chat-container{
+    margin-top: 50px;
+    width: 1000px;
+    height: 500px;
+}

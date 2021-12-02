@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bot Control Panel</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="top-bar">
+</div>
+<h2>Bot Data:</h2>
+<p id="health"></p>
+<p id="username"></p>
+<p id="location"></p>
+
+<h3>Chat:</h3>
+<label for="chat-box">Chat:</label>
+<input type="text" id="chat-box">
+<button onclick="return sendMessage()">Submit</button>
+<button id="clear" onclick="clearChat()">Clear Chat</button>
+
+<div id="main-hud">
+    <div id="chat-container" style="background-color: #787878"></div>
+    <div id="canvas-container">
+        <h3>Interactive Radar</h3>
+        <canvas id="canvas" width="500px" height="500px"></canvas>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="scripts/radar.js"></script>
+<script src="scripts/bot.js"></script>
+
+</body>
+</html>
