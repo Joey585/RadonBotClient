@@ -28,8 +28,14 @@
     "express": "^4.17.1",
     "minecraft-data": "^2.96.0",
     "minecraft-protocol": "^1.28.0",
-    "mineflayer": "^3.11.2",
+    "mineflayer": "^4.3.0",
+    "mineflayer-pathfinder": "^2.1.1",
     "mineflayer-radar": "^0.0.2",
+    "mineflayer-web-inventory": "^1.6.3",
     "socket.io": "^4.4.0"
+  },
+  "devDependencies": {
+    "prismarine-viewer": "^1.21.0",
+    "socket.io-client": "^4.4.0"
   }
 }

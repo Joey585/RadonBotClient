@@ -3,15 +3,15 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-const mineflayer = require("mineflayer");
 const io = new Server(server);
-const Convert = require('ansi-to-html')
-const convert = new Convert()
-const radarPlugin = require('mineflayer-radar')(mineflayer);
+const mineflayer = require('mineflayer')
+const bots = new Map()
 const path = require('path');
-require('dotenv').config()
+const fs = require('fs');
+const pathfinder = require('mineflayer-pathfinder').pathfinder
+const Movements = require('mineflayer-pathfinder').Movements
+const { GoalNear, GoalFollow } = require('mineflayer-pathfinder').goals
 
-console.log(process.env.IP)
 
 function getDir() {
     if (process.pkg) {
@@ -21,89 +21,68 @@ function getDir() {
     }
 }
 
-
 app.use('/', express.static(getDir() + '/webserver'));
-// app.get('/', (req, res) => {
-//     res.sendFile(getDirPath() + '/webserver/index.html');
-// });
+
+
 
 io.on('connection', (socket) => {
-    bot.on('health', () => {
-        socket.emit('health', Math.round(bot.health));
-    })
-    bot.once('spawn', () => {
-        // console.log('Spawned!')
-        // console.log(bot.entity.position.x)
-        // console.log(bot.players)
 
+    socket.on('add-bot', (username, password, host, port) => {
+        console.log('Attempting to login...')
+        createBot(username, password, host, port).then((bot) => {
+            console.log(`Logged into ${bot.player.username}`)
+            bots.set(bot.username, bot)
+            const response = {
+                uuid: bot.player.uuid,
+                username: bot.player.username,
+                ping: bot.player.ping
+            }
+            socket.emit('show-bot', response)
+
+        })
     })
-    bot.on('move', () => {
-        const jsonData = {
-            username: bot.username,
-            x: Math.round(bot.entity.position.x),
-            y: Math.round(bot.entity.position.y),
-            z: Math.round(bot.entity.position.z)
+
+    socket.on('remove-bot', (username, callback) => {
+        const bot = bots.get(username)
+        bot.quit("deleted")
+        bots.delete(username)
+        callback("deleted")
+    })
+
+    socket.on('follow-user', (target) => {
+        for (let [user, bot] of bots) {
+            bot.loadPlugin(pathfinder)
+            const mcData = require('minecraft-data')(bot.version)
+            const defaultMove = new Movements(bot, mcData)
+
+            if (target === user) return;
+            const person = bot.players[target] ? bot.players[target].entity : null
+
+            if (!person) return;
+            bot.pathfinder.setMovements(defaultMove)
+            bot.pathfinder.setGoal(new GoalFollow(person, 2), true)
         }
-        socket.emit('botData', jsonData)
-    })
-    socket.on('chat-send', (data) => {
-        bot.chat(data)
-    })
-    // bot.on('messagestr', (message) => {
-    //     socket.emit('chat', message)
-    // })
-    bot.on('message', (message) => {
-        const msg = message.toAnsi()
-        const data = convert.toHtml(msg)
-        socket.emit('chat', data)
     })
 
-    function filterPlayer(emit, entity){
-        const newEntity = Object.fromEntries(
-            Object.entries(entity).filter(([key, value]) => key === 'type')
-        )
-        if (newEntity.type === 'player') {
-            if (entity.username === bot.username) return;
-            socket.emit(emit, entity);
-        }
-    }
-
-    bot.on('move', function() {
-        socket.emit('entity', bot.entity);
-    });
-
-    bot.on('entitySpawn', function(entity) {
-        filterPlayer('entitySpawn', entity)
-    });
-
-    bot.on('entityGone', function(entity) {
-        filterPlayer('entityGone', entity)
-    });
-
-    bot.on('entityMoved', function(entity) {
-        filterPlayer('entityMoved', entity)
-    });
-
-    socket.on('controlState', function(state) {
-        bot.setControlState(state.name, state.value);
-    });
-
-    socket.on('look', function(look) {
-        bot.look(look.yaw, look.pitch);
-    });
-
-});
-
-const bot = mineflayer.createBot({
-    username: process.env.EMAIL,
-    password: process.env.PASSWORD,
-    host: process.env.IP,
-    port: process.env.PORT,
 })
 
 
 
+function createBot(u, pass, h, por){
+    return new Promise((resolve, reject) => {
+        const bot = mineflayer.createBot({
+            username: u,
+            password: pass,
+            host: h,
+            port: por
+        })
+        bot.on('spawn', () => resolve(bot))
+        bot.on('error', (err) => reject(err))
+    })
+}
 
-server.listen(3000, () => {
+
+server.listen(3001, () => {
     console.log('Server Active!');
 });
+

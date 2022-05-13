@@ -1,10 +1,10 @@
-var io = window.io
-    , socket = io.connect()
-    , canvas = document.getElementById('canvas')
-    , context = canvas.getContext('2d')
-    , drawInterval = setInterval(draw, 50)
-    , botEntity
-    , entities = {}
+// var io = window.io
+//     , socket = io.connect()
+//     , canvas = document.getElementById('canvas')
+//     , context = canvas.getContext('2d')
+//     , drawInterval = setInterval(draw, 50)
+//     , botEntity
+//     , entities = {}
 
 // add tabindex property to canvas so that it can receive keyboard input
 canvas.tabIndex = 0;

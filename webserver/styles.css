@@ -7,3 +7,17 @@
     width: 1000px;
     height: 500px;
 }
+
+.bot-container {
+    border: 5px solid gray;
+    padding: 12px;
+}
+.bot-container img {
+    width: 50px;
+    height: 50px;
+}
+.bot-container  a {
+    text-decoration: none;
+    border: gray solid 3px;
+    border-radius: 15px;
+}
