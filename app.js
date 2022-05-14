@@ -11,6 +11,7 @@ const fs = require('fs');
 const pathfinder = require('mineflayer-pathfinder').pathfinder
 const Movements = require('mineflayer-pathfinder').Movements
 const { GoalNear, GoalFollow } = require('mineflayer-pathfinder').goals
+const pvp = require('mineflayer-pvp').plugin
 
 
 function getDir() {
@@ -64,6 +65,31 @@ io.on('connection', (socket) => {
         }
     })
 
+    socket.on('stop-follow', () => {
+        for (let [user, bot] of bots) {
+            bot.pathfinder.setGoal(null)
+        }
+    })
+    socket.on('bot-chat', (message) => {
+        for (let [user, bot] of bots) {
+            bot.chat(message)
+        }
+    })
+    socket.on('bot-attack', (target) => {
+        for (let [user, bot] of bots) {
+            bot.loadPlugin(pathfinder)
+            bot.loadPlugin(pvp)
+            if (target === user) return;
+            const victim = bot.players[target]
+            if (!victim) return;
+            bot.pvp.attack(victim.entity)
+        }
+    })
+    socket.on('stop-attack', () => {
+        for (let [user, bot] of bots) {
+            bot.pvp.stop()
+        }
+    })
 })
 
 

@@ -20,19 +20,28 @@
 <button onclick="addBot()">Add Bot</button>
 <br>
 
-<div id="all-bots" class="main-panel">
-
-</div>
-
 <div id="functions" class="main-panel">
     <label>
         Enter Target
         <input type="text" id="target">
     </label>
-    <button onclick="followUser()">Make bots follow you</button>
+    <button onclick="followUser()">Make bots follow target</button>
+    <button onclick="stopFollow()">Stop following target</button>
+    <button onclick="attack()">Attack target</button>
+    <button onclick="stopAttack()">Stop Attacking</button>
+    <br>
+    <label>
+        Make all bots chat:
+        <input type="text" id="message">
+        <button onclick="chat()">Send Message</button>
+    </label>
+</div>
+
+<div id="all-bots" class="main-panel">
+
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
-<script src="./scripts/login.js"></script>
+<script src="scripts/main.js"></script>
 </body>
 </html>
